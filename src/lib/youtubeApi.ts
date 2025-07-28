@@ -225,7 +225,7 @@ export async function batchFetchThumbnails(
  * Get fallback thumbnail URL
  */
 export function getFallbackThumbnail(): string {
-  return 'https://images.pexels.com/photos/358220/pexels-photo-358220.jpeg?auto=compress&cs=tinysrgb&w=1280&h=720'
+  return 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png'
 }
 
 /**

@@ -4,7 +4,7 @@ import { getRaceHighlightThumbnail } from '../lib/thumbnailService'
 import { quotaManager, getQuotaWarningMessage } from '../lib/quotaManager'
 import { validateThumbnailDatabase, getAllVideoIds } from '../lib/thumbnailUtils'
 import { populateSampleRaces } from '../lib/thumbnailManager'
-import { testGeminiAPI } from '../lib/thumbnailService'
+import { testSearchQuery } from '../lib/thumbnailService'
 
 interface CacheStats {
   totalCached: number
@@ -180,17 +180,17 @@ export default function ThumbnailAdminPage() {
     }
   }
 
-  const handleTestGeminiAPI = async () => {
+  const handleTestSearchQuery = async () => {
     setLoading(true)
     try {
-      const result = await testGeminiAPI()
+      const result = await testSearchQuery()
       if (result.success) {
-        setMessage(`Gemini API test successful! Generated query: "${result.query}"`)
+        setMessage(`Search query test successful! Generated query: "${result.query}"`)
       } else {
-        setMessage('Gemini API test failed: ' + (result.error || 'Unknown error'))
+        setMessage('Search query test failed: ' + (result.error || 'Unknown error'))
       }
     } catch (error) {
-      setMessage('Error testing Gemini API: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      setMessage('Error testing search query: ' + (error instanceof Error ? error.message : 'Unknown error'))
     } finally {
       setLoading(false)
     }
@@ -342,11 +342,11 @@ export default function ThumbnailAdminPage() {
               Populate Sample Races
             </button>
             <button
-              onClick={handleTestGeminiAPI}
+              onClick={handleTestSearchQuery}
               disabled={loading}
               className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 px-4 py-2 rounded transition-colors"
             >
-              Test Gemini API
+              Test Search Query
             </button>
           </div>
         </div>

@@ -6,7 +6,6 @@ import { RacePage } from './pages/RacePage'
 import { ProfilePage } from './pages/ProfilePage'
 import ThumbnailAdminPage from './pages/ThumbnailAdminPage'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import { QuotaWarning } from './components/QuotaWarning'
 import { initializeAutoImport } from './lib/autoImportService'
 
 function App() {
@@ -17,7 +16,6 @@ function App() {
 
   return (
     <Router>
-      <QuotaWarning />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route 

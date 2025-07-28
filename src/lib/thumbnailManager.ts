@@ -120,7 +120,7 @@ export function getThumbnailWithFallback(raceName: string, season: string): {
   // This function is now async, but we keep the sync version for backward compatibility
   // It will return a fallback immediately
   return {
-    url: 'https://images.pexels.com/photos/358220/pexels-photo-358220.jpeg?auto=compress&cs=tinysrgb&w=1280&h=720',
+    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png',
     isOfficial: false,
     quality: 'fallback'
   }
@@ -154,7 +154,7 @@ export async function getThumbnailWithRobustFallback(raceName: string, season: s
     
     // If no database data, return fallback
     return {
-      url: 'https://images.pexels.com/photos/358220/pexels-photo-358220.jpeg?auto=compress&cs=tinysrgb&w=1280&h=720',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png',
       isOfficial: false,
       quality: 'fallback',
       isValid: false
@@ -162,7 +162,7 @@ export async function getThumbnailWithRobustFallback(raceName: string, season: s
   } catch (error) {
     console.error('Error in getThumbnailWithRobustFallback:', error)
     return {
-      url: 'https://images.pexels.com/photos/358220/pexels-photo-358220.jpeg?auto=compress&cs=tinysrgb&w=1280&h=720',
+      url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png',
       isOfficial: false,
       quality: 'fallback',
       isValid: false

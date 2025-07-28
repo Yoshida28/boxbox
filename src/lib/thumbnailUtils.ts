@@ -208,21 +208,8 @@ export function parseRaceName(input: string): {
  * Get fallback thumbnail based on circuit name
  */
 export function getCircuitFallbackThumbnail(circuitName: string): string {
-  const circuitImages: Record<string, string> = {
-    'bahrain': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'saudi': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'australia': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'japan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'china': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'miami': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'monaco': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'canada': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'spain': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop',
-    'default': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&h=450&fit=crop'
-  }
-  
-  const circuitKey = circuitName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z]/g, '')
-  return circuitImages[circuitKey] || circuitImages.default
+  // Use F1 logo as fallback instead of sea diving image
+  return 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png'
 }
 
 /**

@@ -1,9 +1,8 @@
 import { supabase } from './supabase'
 import { quotaManager, shouldSkipApiCall } from './quotaManager'
 
-const FORMULA_1_CHANNEL_ID = 'UCB_qr77-2MVdNm0jKKG-h6g'
-const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
-const GEMINI_API_KEY = 'AIzaSyBpDROmeZc_tr9J0iFCfn-YISh5PPixHvM' // User provided API key
+const FORMULA_1_CHANNEL_ID = 'UCB_qr75-ydFVKSF9Dmo6izg'
+const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || 'AIzaSyCXAJsZ0f9ILTXQffRrdPZQmUTOp3Y-fCE'
 
 export interface ThumbnailResult {
   success: boolean
@@ -140,41 +139,14 @@ async function findSimilarCachedThumbnail(raceName: string, year: string): Promi
 }
 
 /**
- * Generate search query using Gemini API (improved prompt)
+ * Generate search query for F1 race highlights
  */
-async function generateSearchQuery(raceName: string, year: string): Promise<string> {
-  try {
-    const prompt = `Generate a YouTube search query that will return ONLY the official Formula 1 race highlights for the ${raceName} ${year} from the official Formula 1 YouTube channel. The query should be as specific as possible and include the race name, year, and the phrase \"Race Highlights\". Only return the search query string, nothing else.`
-    
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    const query = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-    
-    if (!query) {
-      throw new Error('No query generated from Gemini API')
-    }
-
-    console.log(`[Gemini] Generated search query for ${raceName} ${year}: "${query}"`)
-    return query
-  } catch (error) {
-    console.error('[Gemini] Error generating search query:', error)
-    // Fallback to basic search query
-    return `${raceName} Formula 1 Race Highlights ${year}`
-  }
+function generateSearchQuery(raceName: string, year: string): string {
+  // Use the exact pattern that F1 uses for their race highlight titles
+  // Format: "Race Highlights | 2025 {Race Name} Grand Prix"
+  const searchQuery = `Race Highlights ${year} ${raceName}`
+  console.log(`[Search] Generated query for ${raceName} ${year}: "${searchQuery}"`)
+  return searchQuery
 }
 
 /**
@@ -200,11 +172,11 @@ async function searchYouTubeHighlights(raceName: string, year: string): Promise<
   }
 
   try {
-    // Generate search query using Gemini API
-    const searchQuery = await generateSearchQuery(raceName, year)
+    // Generate search query for the specific race
+    const searchQuery = generateSearchQuery(raceName, year)
     
     // Search YouTube with the generated query
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&q=${encodeURIComponent(searchQuery)}&type=video&key=${YOUTUBE_API_KEY}&order=relevance&publishedAfter=${year}-01-01T00:00:00Z&publishedBefore=${year}-12-31T23:59:59Z&channelId=${FORMULA_1_CHANNEL_ID}`
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${encodeURIComponent(searchQuery)}&type=video&key=${YOUTUBE_API_KEY}&order=relevance&publishedAfter=${year}-01-01T00:00:00Z&publishedBefore=${year}-12-31T23:59:59Z&channelId=${FORMULA_1_CHANNEL_ID}`
     
     console.log(`[YouTube] Searching with query: ${searchQuery}`)
     
@@ -238,16 +210,67 @@ async function searchYouTubeHighlights(raceName: string, year: string): Promise<
       }
     }
 
-    // Strict filtering: Only official F1 channel, title must include race name and 'highlights'
-    const normalizedRaceName = raceName.toLowerCase().replace(/ grand prix/i, '').trim()
+    // Look for exact match with the F1 race highlights pattern
+    const expectedTitle = `Race Highlights | ${year} ${raceName} Grand Prix`
+    console.log(`[YouTube] Looking for exact match: "${expectedTitle}"`)
+    
     for (const item of responseData.items) {
-      const videoTitle = item.snippet.title.toLowerCase()
+      const videoTitle = item.snippet.title
       const channelId = item.snippet.channelId
+      
+      console.log(`[YouTube] Checking: "${videoTitle}" (Channel: ${channelId})`)
+      
+      // Check for exact title match first
+      if (channelId === FORMULA_1_CHANNEL_ID && videoTitle.trim() === expectedTitle) {
+        console.log(`[YouTube] ✅ Found exact match: "${videoTitle}"`)
+        const videoId = item.id.videoId
+        const thumbnailQualities = [
+          'maxresdefault.jpg',
+          'hqdefault.jpg', 
+          'mqdefault.jpg',
+          'sddefault.jpg',
+          'default.jpg'
+        ]
+        let finalThumbnailUrl = ''
+        for (const quality of thumbnailQualities) {
+          const testUrl = `https://img.youtube.com/vi/${videoId}/${quality}`
+          try {
+            const thumbnailCheck = await fetch(testUrl, { 
+              method: 'HEAD',
+              signal: AbortSignal.timeout(5000)
+            })
+            if (thumbnailCheck.ok) {
+              finalThumbnailUrl = testUrl
+              console.log(`[YouTube] Found working thumbnail: ${testUrl}`)
+              break
+            }
+          } catch (error) {
+            continue
+          }
+        }
+        if (!finalThumbnailUrl) {
+          finalThumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+        }
+        return {
+          success: true,
+          raceName,
+          thumbnailUrl: finalThumbnailUrl,
+          videoId,
+          channelTitle: item.snippet.channelTitle,
+          videoTitle: item.snippet.title
+        }
+      }
+      
+      // Fallback: Check for partial match (race name + highlights)
+      const normalizedRaceName = raceName.toLowerCase().replace(/ grand prix/i, '').trim()
+      const videoTitleLower = videoTitle.toLowerCase()
       if (
         channelId === FORMULA_1_CHANNEL_ID &&
-        videoTitle.includes('highlight') &&
-        videoTitle.includes(normalizedRaceName)
+        videoTitleLower.includes('highlight') &&
+        videoTitleLower.includes(normalizedRaceName) &&
+        videoTitleLower.includes(year)
       ) {
+        console.log(`[YouTube] ✅ Found partial match: "${videoTitle}"`)
         const videoId = item.id.videoId
         const thumbnailQualities = [
           'maxresdefault.jpg',
@@ -286,8 +309,9 @@ async function searchYouTubeHighlights(raceName: string, year: string): Promise<
         }
       }
     }
-    // If no strict match, fallback to branded F1 image
-    console.warn(`[YouTube] No strict match found for ${raceName} ${year}. Using fallback image.`)
+    
+    // If no match found, fallback to branded F1 image
+    console.warn(`[YouTube] No match found for ${raceName} ${year}. Using fallback image.`)
     return {
       success: false,
       raceName,
@@ -603,7 +627,7 @@ export async function cleanupInvalidThumbnails(): Promise<{
  * Get fallback thumbnail URL
  */
 export function getFallbackThumbnail(): string {
-  return 'https://images.pexels.com/photos/358220/pexels-photo-358220.jpeg?auto=compress&cs=tinysrgb&w=1280&h=720'
+  return 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png'
 }
 
 /**
@@ -642,15 +666,15 @@ export async function getOptimizedThumbnail(
 } 
 
 /**
- * Test Gemini API functionality
+ * Test search query generation
  */
-export async function testGeminiAPI(): Promise<{
+export async function testSearchQuery(): Promise<{
   success: boolean
   query?: string
   error?: string
 }> {
   try {
-    const testQuery = await generateSearchQuery('Monaco Grand Prix', '2024')
+    const testQuery = generateSearchQuery('Monaco Grand Prix', '2024')
     return {
       success: true,
       query: testQuery
