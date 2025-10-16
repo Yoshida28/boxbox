@@ -22,10 +22,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setLoading: (loading) => set({ loading }),
   
   signInWithGoogle: async () => {
+    // Use production URL for OAuth redirect
+    const redirectUrl = window.location.hostname === 'localhost' 
+      ? 'https://boxboxed.vercel.app/dashboard'
+      : `${window.location.origin}/dashboard`
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`
+        redirectTo: redirectUrl
       }
     })
     
