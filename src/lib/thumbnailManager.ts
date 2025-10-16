@@ -112,7 +112,7 @@ export async function getSeasonThumbnails(season: string): Promise<ThumbnailData
 /**
  * Get thumbnail with fallback mechanism
  */
-export function getThumbnailWithFallback(raceName: string, season: string): {
+export function getThumbnailWithFallback(_raceName: string, _season: string): {
   url: string
   isOfficial: boolean
   quality: string

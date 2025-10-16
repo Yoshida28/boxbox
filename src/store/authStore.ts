@@ -7,8 +7,7 @@ interface AuthState {
   loading: boolean
   setUser: (user: User | null) => void
   setLoading: (loading: boolean) => void
-  signUp: (email: string, password: string) => Promise<{ error?: any }>
-  signIn: (email: string, password: string) => Promise<{ error?: any }>
+  signInWithGoogle: () => Promise<{ error?: any }>
   signOut: () => Promise<void>
   initialize: () => Promise<void>
   ensureProfile: (user: User) => Promise<void>
@@ -22,35 +21,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   
   setLoading: (loading) => set({ loading }),
   
-  signUp: async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+  signInWithGoogle: async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
       options: {
-        emailRedirectTo: undefined
+        redirectTo: `${window.location.origin}/dashboard`
       }
     })
-    
-    if (data.user && !error) {
-      set({ user: data.user })
-      // Ensure profile is created
-      await get().ensureProfile(data.user)
-    }
-    
-    return { error }
-  },
-  
-  signIn: async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-    
-    if (data.user && !error) {
-      set({ user: data.user })
-      // Ensure profile exists
-      await get().ensureProfile(data.user)
-    }
     
     return { error }
   },
@@ -69,7 +46,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
     set({ user: session?.user ?? null, loading: false })
     
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         await get().ensureProfile(session.user)
       }

@@ -2,7 +2,7 @@
 // Handles background importing of new F1 races without user intervention
 
 import { supabase } from './supabase'
-import { fetchF1Season, transformF1RaceToDbFormat, getAvailableSeasons } from './f1Api'
+import { fetchF1Season, transformF1RaceToDbFormat } from './f1Api'
 
 interface ImportLog {
   timestamp: string

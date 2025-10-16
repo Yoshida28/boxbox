@@ -207,7 +207,7 @@ export function parseRaceName(input: string): {
 /**
  * Get fallback thumbnail based on circuit name
  */
-export function getCircuitFallbackThumbnail(circuitName: string): string {
+export function getCircuitFallbackThumbnail(_circuitName: string): string {
   // Use F1 logo as fallback instead of sea diving image
   return 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/512px-F1.svg.png'
 }

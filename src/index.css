@@ -1,3 +1,285 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Mobile-first base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* Prevent zoom on iOS */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    /* Better touch scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Mobile tap highlights */
+  * {
+    -webkit-tap-highlight-color: rgba(220, 38, 38, 0.2);
+  }
+  
+  /* Better focus styles for mobile */
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #DC2626;
+    outline-offset: 2px;
+  }
+  
+  /* Remove default button styles */
+  button {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  /* Better input styles for mobile */
+  input, select, textarea {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+  
+  /* Prevent zoom on input focus (iOS) */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px;
+  }
+  
+  @media (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
+}
+
+/* Mobile-first component styles */
+@layer components {
+  /* Mobile-optimized buttons */
+  .btn-mobile {
+    @apply px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 active:scale-95;
+    min-height: 44px; /* iOS touch target minimum */
+    min-width: 44px;
+  }
+  
+  .btn-primary-mobile {
+    @apply btn-mobile bg-f1-red hover:bg-red-700 text-white shadow-mobile active:shadow-none;
+  }
+  
+  .btn-secondary-mobile {
+    @apply btn-mobile bg-gray-800 hover:bg-gray-700 text-white border border-gray-700;
+  }
+  
+  /* Mobile-optimized cards */
+  .card-mobile {
+    @apply bg-gray-900 rounded-xl border border-gray-800 shadow-mobile transition-all duration-300;
+  }
+  
+  .card-mobile:hover {
+    @apply shadow-mobile-lg transform scale-[1.02];
+  }
+  
+  /* Mobile-optimized inputs */
+  .input-mobile {
+    @apply w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400;
+    @apply focus:border-f1-red focus:ring-1 focus:ring-f1-red transition-colors;
+    min-height: 44px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Mobile-optimized grid */
+  .grid-mobile {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  @media (max-width: 640px) {
+    .grid-mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Mobile navigation */
+  .nav-mobile {
+    @apply fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-50;
+    @apply flex items-center justify-around py-2 px-4;
+    /* Safe area for iPhone X+ */
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+  
+  .nav-item-mobile {
+    @apply flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .nav-item-mobile.active {
+    @apply bg-f1-red/20 text-f1-red;
+  }
+  
+  /* Mobile-optimized modals */
+  .modal-mobile {
+    @apply fixed inset-0 z-50 flex items-end sm:items-center justify-center;
+    @apply bg-black/50 backdrop-blur-sm;
+  }
+  
+  .modal-content-mobile {
+    @apply bg-gray-900 rounded-t-xl sm:rounded-xl border border-gray-800;
+    @apply w-full max-w-md max-h-[90vh] overflow-y-auto;
+    /* Safe area for iPhone X+ */
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Mobile-optimized loading states */
+  .loading-mobile {
+    @apply animate-pulse bg-gray-800 rounded;
+  }
+  
+  /* Mobile-optimized text */
+  .text-mobile-xs {
+    @apply text-xs leading-4;
+  }
+  
+  .text-mobile-sm {
+    @apply text-sm leading-5;
+  }
+  
+  .text-mobile-base {
+    @apply text-base leading-6;
+  }
+  
+  .text-mobile-lg {
+    @apply text-lg leading-7;
+  }
+  
+  /* Mobile-optimized spacing */
+  .container-mobile {
+    @apply px-4 sm:px-6 lg:px-8;
+  }
+  
+  .section-mobile {
+    @apply py-6 sm:py-8 lg:py-12;
+  }
+}
+
+/* Mobile-first utility classes */
+@layer utilities {
+  /* Safe area utilities for iPhone X+ */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  /* Mobile viewport utilities */
+  .min-h-screen-mobile {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+  
+  /* Touch-friendly utilities */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+  
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+  
+  /* Mobile-specific animations */
+  .animate-fade-in-mobile {
+    animation: fadeInMobile 0.3s ease-out;
+  }
+  
+  .animate-slide-up-mobile {
+    animation: slideUpMobile 0.3s ease-out;
+  }
+  
+  .animate-scale-in-mobile {
+    animation: scaleInMobile 0.2s ease-out;
+  }
+  
+  @keyframes fadeInMobile {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes scaleInMobile {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Mobile-specific responsive utilities */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+  
+  .desktop-only {
+    @apply hidden sm:block;
+  }
+  
+  .tablet-up {
+    @apply hidden md:block;
+  }
+  
+  .mobile-tablet-only {
+    @apply block lg:hidden;
+  }
+}

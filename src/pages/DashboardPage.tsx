@@ -136,22 +136,24 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header */}
-      <header className="bg-gray-900 border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="min-h-screen-mobile bg-black safe-top pb-20 sm:pb-0">
+      {/* Mobile Header */}
+      <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-40">
+        <div className="container-mobile py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Flag className="w-8 h-8 text-red-600 mr-3" />
-              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Oswald' }}>
+              <Flag className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 mr-2 sm:mr-3" />
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white" style={{ fontFamily: 'Oswald' }}>
                 boxbox
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-300">Welcome, {user?.email?.split('@')[0]}</span>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="text-gray-300 text-sm sm:text-base hidden sm:block">
+                Welcome, {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+              </span>
               <a
                 href="/profile"
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="btn-primary-mobile text-sm sm:text-base"
               >
                 Profile
               </a>
@@ -160,15 +162,15 @@ export function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container-mobile section-mobile">
         {/* Race Today Alert */}
         {hasRaceToday && (
-          <div className="mb-6 bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-4">
+          <div className="mb-6 bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-4 animate-fade-in-mobile">
             <div className="flex items-center">
-              <Flag className="w-6 h-6 text-white mr-3" />
+              <Flag className="w-5 h-5 sm:w-6 sm:h-6 text-white mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-white font-bold">🏁 Race Day!</h3>
-                <p className="text-red-100">There's a Formula 1 race scheduled for today!</p>
+                <h3 className="text-white font-bold text-sm sm:text-base">🏁 Race Day!</h3>
+                <p className="text-red-100 text-xs sm:text-sm">There's a Formula 1 race scheduled for today!</p>
               </div>
             </div>
           </div>
@@ -176,20 +178,20 @@ export function DashboardPage() {
 
         {/* Upcoming Races */}
         {upcomingRaces.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center">
-              <Clock className="w-5 h-5 mr-2 text-red-500" />
+          <div className="mb-8 animate-slide-up-mobile">
+            <h2 className="text-lg sm:text-xl font-bold text-white mb-4 flex items-center">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-red-500" />
               Upcoming Races
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {upcomingRaces.slice(0, 4).map(race => {
                 const daysUntil = getDaysUntilRace(race.date)
                 return (
-                  <div key={race.id} className="bg-gray-900 rounded-lg p-4 border border-gray-800">
-                    <h3 className="text-white font-semibold mb-2">{race.grand_prix_name}</h3>
-                    <p className="text-gray-400 text-sm mb-2">{race.circuit_name}</p>
+                  <div key={race.id} className="card-mobile p-3 sm:p-4 animate-scale-in-mobile">
+                    <h3 className="text-white font-semibold mb-2 text-sm sm:text-base">{race.grand_prix_name}</h3>
+                    <p className="text-gray-400 text-xs sm:text-sm mb-2">{race.circuit_name}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-300 text-sm">{formatDate(race.date)}</span>
+                      <span className="text-gray-300 text-xs sm:text-sm">{formatDate(race.date)}</span>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         daysUntil === 0 ? 'bg-red-600 text-white' :
                         daysUntil <= 3 ? 'bg-orange-600 text-white' :
@@ -209,24 +211,24 @@ export function DashboardPage() {
 
         {/* Search and Filters */}
         <div className="mb-8">
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search races, circuits, winners, or dates..."
+                placeholder="Search races, circuits, winners..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-colors"
+                className="input-mobile pl-9 sm:pl-10"
               />
             </div>
             
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="pl-10 pr-8 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-colors appearance-none min-w-[140px]"
+                className="input-mobile pl-9 sm:pl-10 appearance-none min-w-[120px] sm:min-w-[140px]"
               >
                 <option value="all">All Years</option>
                 {availableYears.map(year => (
@@ -237,37 +239,37 @@ export function DashboardPage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+            <div className="card-mobile p-3 sm:p-4 animate-fade-in-mobile">
               <div className="flex items-center">
-                <TrendingUp className="w-5 h-5 text-green-500 mr-2" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-400 text-sm">Total Races</p>
-                  <p className="text-white text-xl font-bold">{races.length}</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Total Races</p>
+                  <p className="text-white text-lg sm:text-xl font-bold">{races.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+            <div className="card-mobile p-3 sm:p-4 animate-fade-in-mobile">
               <div className="flex items-center">
-                <Calendar className="w-5 h-5 text-blue-500 mr-2" />
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-2 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-400 text-sm">Seasons Covered</p>
-                  <p className="text-white text-xl font-bold">{availableYears.length}</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Seasons Covered</p>
+                  <p className="text-white text-lg sm:text-xl font-bold">{availableYears.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-gray-900 rounded-lg p-4 border border-gray-800">
+            <div className="card-mobile p-3 sm:p-4 animate-fade-in-mobile">
               <div className="flex items-center">
-                <Clock className="w-5 h-5 text-orange-500 mr-2" />
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 mr-2 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-400 text-sm">Upcoming</p>
-                  <p className="text-white text-xl font-bold">{upcomingRaces.length}</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Upcoming</p>
+                  <p className="text-white text-lg sm:text-xl font-bold">{upcomingRaces.length}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="text-gray-400">
+          <div className="text-gray-400 text-sm sm:text-base">
             Showing {filteredRaces.length} of {races.length} races
             <span className="ml-2 text-xs bg-green-900/50 text-green-400 px-2 py-1 rounded-full">
               Auto-updated
@@ -277,14 +279,16 @@ export function DashboardPage() {
 
         {/* Race Grid */}
         {filteredRaces.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRaces.map(race => (
-              <RaceCard key={race.id} race={race} />
+          <div className="grid-mobile">
+            {filteredRaces.map((race, index) => (
+              <div key={race.id} className="animate-fade-in-mobile" style={{ animationDelay: `${index * 0.1}s` }}>
+                <RaceCard race={race} />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-lg mb-4">
+          <div className="text-center py-12 animate-fade-in-mobile">
+            <div className="text-gray-400 text-base sm:text-lg mb-4">
               {searchQuery || selectedYear !== 'all' 
                 ? 'No races found matching your criteria'
                 : 'No races available'
@@ -292,8 +296,8 @@ export function DashboardPage() {
             </div>
             {!searchQuery && selectedYear === 'all' && races.length === 0 && (
               <div className="space-y-4">
-                <p className="text-gray-500">F1 races are automatically imported when scheduled</p>
-                <div className="text-sm text-gray-600">
+                <p className="text-gray-500 text-sm sm:text-base">F1 races are automatically imported when scheduled</p>
+                <div className="text-xs sm:text-sm text-gray-600">
                   The system checks for new races every 24 hours
                 </div>
               </div>
@@ -304,7 +308,7 @@ export function DashboardPage() {
                   setSearchQuery('')
                   setSelectedYear('all')
                 }}
-                className="mt-4 text-red-400 hover:text-red-300 transition-colors"
+                className="btn-secondary-mobile mt-4"
               >
                 Clear filters
               </button>

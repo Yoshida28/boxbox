@@ -123,10 +123,18 @@ export function ProfilePage() {
             <div className="bg-gray-900 rounded-xl p-6 sticky top-8">
               <div className="text-center mb-6">
                 <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-10 h-10 text-white" />
+                  {user?.user_metadata?.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt="Profile"
+                      className="w-20 h-20 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-10 h-10 text-white" />
+                  )}
                 </div>
                 <h1 className="text-2xl font-bold text-white mb-2">
-                  {user?.email?.split('@')[0]}
+                  {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
                 </h1>
                 <p className="text-gray-400">{user?.email}</p>
               </div>
